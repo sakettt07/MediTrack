@@ -15,10 +15,13 @@ import { LinearGradient } from "expo-linear-gradient";
 // optional icon - install if you want the arrow on button:
 // npx expo install @expo/vector-icons
 import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
 export default function Login({ navigation }) {
+
+  const router=useRouter();
   const handleContinue = () => {
     if (navigation?.navigate) navigation.navigate("Home");
   };
@@ -44,13 +47,12 @@ export default function Login({ navigation }) {
         </View>
 
         <View style={styles.center}>
-          {/* Soft circular background (matches image pink circle) */}
-          <View style={styles.pinkCircle} />
+
 
           {/* image card sits above the circle */}
           <View style={styles.imageCard}>
             <Image
-              source={require("../../assets/loginImg/Intro.jpg")}
+              source={require("../../assets/loginImg/Intro.png")}
               style={styles.image}
               resizeMode="cover"
               accessible
@@ -59,23 +61,17 @@ export default function Login({ navigation }) {
           </View>
 
           {/* floating teal pill with a small med cross (visual accent) */}
-          <View style={styles.medBadge}>
-            <View style={styles.crossBox}>
-              <View style={styles.crossVertical} />
-              <View style={styles.crossHorizontal} />
-            </View>
-          </View>
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.headline}>Stay on track, stay healthy</Text>
+          <Text style={styles.headline}>Stay on track, Stay healthy</Text>
           <Text style={styles.sub}>
-            Track your meds, take control of your health. Small habits → big
+            Track your meds, take control of your health. Small habits - big
             impact.
           </Text>
 
           <Pressable
-            onPress={handleContinue}
+            onPress={()=>router.push('login/register')}
             android_ripple={{ color: "rgba(255,255,255,0.15)" }}
             style={({ pressed }) => [
               styles.ctaWrap,
@@ -92,18 +88,11 @@ export default function Login({ navigation }) {
               <MaterialIcons name="arrow-forward" size={20} color="#fff" />
             </LinearGradient>
           </Pressable>
-
-          <TouchableOpacity style={styles.ghost}>
-            <Text style={styles.ghostText}>Sign in with email</Text>
-          </TouchableOpacity>
-
         </View>
       </LinearGradient>
     </SafeAreaView>
   );
 }
-
-const CIRCLE_SIZE = Math.min(width * 0.82, 320);
 
 const styles = StyleSheet.create({
   safe: {
@@ -143,24 +132,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
-  pinkCircle: {
-    position: "absolute",
-    width: CIRCLE_SIZE,
-    height: CIRCLE_SIZE,
-    borderRadius: CIRCLE_SIZE / 2,
-    backgroundColor: "#ffdfe4", // pale pink from image
-    alignSelf: "center",
-    top: 0,
-  },
-
   imageCard: {
-    width: width - 80,
-    height: (width - 80) * 0.72,
+    width: width - 20,
+    height: (width - 30) * 0.72,
     borderRadius: 18,
     overflow: "hidden",
-    backgroundColor: "#fff",
-    elevation: 10,
-    shadowColor: "#eaa6ac",
     shadowOffset: { width: 0, height: 14 },
     shadowOpacity: 0.12,
     shadowRadius: 36,
@@ -174,7 +150,6 @@ const styles = StyleSheet.create({
   medBadge: {
     position: "absolute",
     right: width * 0.14,
-    top: CIRCLE_SIZE * 0.18,
     width: 64,
     height: 64,
     borderRadius: 18,
