@@ -13,14 +13,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-export default function Register() {
+export default function Login() {
   const router = useRouter();
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = () => {
-    // handle register logic here
+  const handleLogin = () => {
+    // handle login logic here
   };
 
   return (
@@ -36,17 +35,10 @@ export default function Register() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Text style={styles.title}>Let’s Sign You In ✨</Text>
-        <Text style={styles.subtitle}>Create your account to get started</Text>
+        <Text style={styles.title}>Welcome Back 👋</Text>
+        <Text style={styles.subtitle}>Login to continue your health journey</Text>
 
         <View style={styles.form}>
-          <TextInput
-            placeholder="Full Name"
-            placeholderTextColor="#777"
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-          />
           <TextInput
             placeholder="Email"
             placeholderTextColor="#777"
@@ -65,7 +57,7 @@ export default function Register() {
 
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={handleRegister}
+            onPress={handleLogin}
             style={styles.buttonWrap}
           >
             <LinearGradient
@@ -74,17 +66,17 @@ export default function Register() {
               end={{ x: 1, y: 0 }}
               style={styles.button}
             >
-              <Text style={styles.buttonText}>Register</Text>
+              <Text style={styles.buttonText}>Login</Text>
               <MaterialIcons name="arrow-forward" size={20} color="#fff" />
             </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push("login/login")}
+            onPress={() => router.push("login/register")}
             style={styles.link}
           >
             <Text style={styles.linkText}>
-              Already have an account? <Text style={styles.highlight}>Login</Text>
+              Don’t have an account? <Text style={styles.highlight}>Register</Text>
             </Text>
           </TouchableOpacity>
         </View>
