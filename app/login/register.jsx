@@ -7,11 +7,14 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
+  ToastAndroid,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { auth } from "../../config/firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function Register() {
   const router = useRouter();
@@ -20,7 +23,20 @@ export default function Register() {
   const [password, setPassword] = useState("");
 
   const handleRegister = () => {
+    if(!name ||!email ||!password){
+      ToastAndroid.show("Please fill all the fields",ToastAndroid.TOP);
+    }
     // handle register logic here
+    createUserWithEmailAndPassword(auth,email,password).then((userCredential)=>{
+      const user=userCredential.user;
+      console.log(user)
+    }).catch((error)=>{
+      const errorCode=error.code;
+      const errorMessage=error.message;
+      if(errorCode==='auth/email-already-in-use'){
+        ToastAndroid.show("Email already exist ",ToastAndroid.TOP)
+      }
+    });
   };
 
   return (
