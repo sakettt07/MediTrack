@@ -7,11 +7,14 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
+  ToastAndroid,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebaseConfig";
 
 export default function Login() {
   const router = useRouter();
@@ -19,7 +22,24 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // handle login logic here
+    if (!email || !password) {
+      ToastAndroid.show("Please fill all the fields", ToastAndroid.TOP);
+      return;
+    }
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        router.push("(tabs)");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if(errorCode=='auth/invalid-credentials'){
+          ToastAndroid.show("Invalid Credentials")
+        }
+        console.log(errorCode, errorMessage);
+      });
   };
 
   return (
@@ -36,7 +56,9 @@ export default function Login() {
         end={{ x: 1, y: 1 }}
       >
         <Text style={styles.title}>Welcome Back 👋</Text>
-        <Text style={styles.subtitle}>Login to continue your health journey</Text>
+        <Text style={styles.subtitle}>
+          Login to continue your health journey
+        </Text>
 
         <View style={styles.form}>
           <TextInput
@@ -76,7 +98,8 @@ export default function Login() {
             style={styles.link}
           >
             <Text style={styles.linkText}>
-              Don’t have an account? <Text style={styles.highlight}>Register</Text>
+              Don’t have an account?{" "}
+              <Text style={styles.highlight}>Register</Text>
             </Text>
           </TouchableOpacity>
         </View>

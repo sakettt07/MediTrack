@@ -25,11 +25,13 @@ export default function Register() {
   const handleRegister = () => {
     if(!name ||!email ||!password){
       ToastAndroid.show("Please fill all the fields",ToastAndroid.TOP);
+      return ;
     }
     // handle register logic here
     createUserWithEmailAndPassword(auth,email,password).then((userCredential)=>{
       const user=userCredential.user;
-      console.log(user)
+      console.log(user);
+      router.push('(tabs)')
     }).catch((error)=>{
       const errorCode=error.code;
       const errorMessage=error.message;
