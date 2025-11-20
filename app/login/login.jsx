@@ -15,6 +15,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebaseConfig";
+import { setLocalStorage } from "../../service/Storage";
 
 export default function Login() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function Login() {
       .then((userCredential) => {
         const user = userCredential.user;
         console.log(user);
+        setLocalStorage('userDetail',user);
         router.push("(tabs)");
       })
       .catch((error) => {

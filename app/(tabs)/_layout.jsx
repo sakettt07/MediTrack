@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Tabs,Tab, useRouter} from "expo-router";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -9,17 +9,23 @@ import { auth } from '../../config/firebaseConfig';
 
 export default function TabLayout() {
     const router=useRouter();
+    const  [authenticated,setAuthenticated]=useState(null);
 
     // if user is logged in
     onAuthStateChanged(auth,(user)=>{
         if(user){
             const uid=user.uid;
-            console.log("this is my user id---",uid);
+            setAuthenticated(true);
         }
         else{
-            router?.push('/login/login')
+            setAuthenticated(false);
         }
     })
+    useEffect(()=>{
+        if(authenticated==false){
+            router?.push('/login/login');
+        }
+    },[authenticated])
   return (
     <Tabs screenOptions={{
         headerShown:false

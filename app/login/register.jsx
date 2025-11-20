@@ -14,7 +14,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { auth } from "../../config/firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { setLocalStorage } from "../../service/Storage";
 
 export default function Register() {
   const router = useRouter();
@@ -28,9 +29,12 @@ export default function Register() {
       return ;
     }
     // handle register logic here
-    createUserWithEmailAndPassword(auth,email,password).then((userCredential)=>{
+    createUserWithEmailAndPassword(auth,email,password).then(async(userCredential)=>{
       const user=userCredential.user;
-      console.log(user);
+      await updateProfile(user,{
+        displayName:name
+      })
+      setLocalStorage('userDetail',user)
       router.push('(tabs)')
     }).catch((error)=>{
       const errorCode=error.code;
