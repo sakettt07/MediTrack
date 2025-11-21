@@ -3,6 +3,7 @@ import React from 'react';
 import { Redirect, useRouter } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebaseConfig';
+import Header from '../../components/Header';
 
 export default function Home() {
   const router=useRouter();
@@ -20,13 +21,10 @@ export default function Home() {
       style={{
         backgroundColor: '#be6e6eff',
         height: '100%',
-        padding: 12,
+        padding: 30,
       }}
     >
-      <Text style={{
-        color:"#fff"
-      }}>Home</Text>
-      <Button style={styles.logoutt} title='logout' onPress={handleLogout}/>
+      <Header />
     </View>
   );
 }

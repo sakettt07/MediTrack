@@ -28,10 +28,9 @@ export default function Login() {
       return;
     }
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
-        console.log(user);
-        setLocalStorage('userDetail',user);
+        await setLocalStorage('userDetail',user);
         router.push("(tabs)");
       })
       .catch((error) => {

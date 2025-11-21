@@ -34,7 +34,7 @@ export default function Register() {
       await updateProfile(user,{
         displayName:name
       })
-      setLocalStorage('userDetail',user)
+      await setLocalStorage('userDetail',user)
       router.push('(tabs)')
     }).catch((error)=>{
       const errorCode=error.code;
