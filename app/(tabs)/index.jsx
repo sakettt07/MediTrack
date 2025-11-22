@@ -19,9 +19,8 @@ export default function Home() {
   return (
     <View
       style={{
-        backgroundColor: '#be6e6eff',
+        backgroundColor: '#d7cf73ff',
         height: '100%',
-        padding: 30,
       }}
     >
       <Header />
