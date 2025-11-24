@@ -27,6 +27,7 @@ export default function Home() {
       {/* <TouchableOpacity style={styles.logoutt} onPress={handleLogout}>
         <Text>Logout</Text>
       </TouchableOpacity> */}
+      {/*  the main content will come here now */}
     </View>
   );
 }
