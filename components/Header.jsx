@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getLocalStorage } from "../service/Storage";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Header = () => {
   const [userInfoData, setUserInfoData] = useState(null);
@@ -21,6 +22,7 @@ const Header = () => {
           <Text style={styles.greeting}>Welcome 👋</Text>
           <Text style={styles.name}>{userInfoData?.displayName}</Text>
         </View>
+        <Ionicons name="settings-outline" size={24} color="black" />
       </View>
     </View>
   );
