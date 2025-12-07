@@ -4,6 +4,7 @@ import { Redirect, useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import { auth } from "../../config/firebaseConfig";
 import Header from "../../components/Header";
+import EmptyState from "../../components/EmptyState";
 
 export default function Home() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function Home() {
         <Text>Logout</Text>
       </TouchableOpacity> */}
       {/*  the main content will come here now */}
+      <EmptyState />
     </View>
   );
 }
