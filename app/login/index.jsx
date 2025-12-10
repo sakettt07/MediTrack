@@ -1,17 +1,15 @@
-import React from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
   Dimensions,
-  StatusBar,
+  Image,
   Platform,
   Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 // optional icon - install if you want the arrow on button:
 // npx expo install @expo/vector-icons
 import { MaterialIcons } from "@expo/vector-icons";
@@ -20,8 +18,7 @@ import { useRouter } from "expo-router";
 const { width } = Dimensions.get("window");
 
 export default function Login({ navigation }) {
-
-  const router=useRouter();
+  const router = useRouter();
   const handleContinue = () => {
     if (navigation?.navigate) navigation.navigate("Home");
   };
@@ -47,8 +44,6 @@ export default function Login({ navigation }) {
         </View>
 
         <View style={styles.center}>
-
-
           {/* image card sits above the circle */}
           <View style={styles.imageCard}>
             <Image
@@ -71,7 +66,7 @@ export default function Login({ navigation }) {
           </Text>
 
           <Pressable
-            onPress={()=>router.push('login/register')}
+            onPress={() => router.push("login/register")}
             android_ripple={{ color: "rgba(255,255,255,0.15)" }}
             style={({ pressed }) => [
               styles.ctaWrap,
