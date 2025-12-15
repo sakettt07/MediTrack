@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <View
       style={{
-        backgroundColor: "#ece7b1ff",
+        backgroundColor: "#e0eff6",
         height: "100%",
       }}
     >
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   logoutt: {
     marginTop: 9,
     backgroundColor: "#fff",
-    padding:5,
-    textAlign:"center"
+    padding: 5,
+    textAlign: "center",
   },
 });

@@ -1,10 +1,10 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import emptyStateImg from "../assets/images/EmptyState/empty.png";
+import emptyStateImg from "../assets/images/EmptyState/empty.jpg";
 
 const EmptyState = ({
-  title = "No Data Available",
-  message = "There’s nothing here right now. Try again later.",
+  title = "No Medications",
+  message = "You have 0 medications setup",
   onPress,
 }) => {
   return (
@@ -13,12 +13,9 @@ const EmptyState = ({
 
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
-
-      {buttonText && onPress && (
-        <TouchableOpacity style={styles.button} onPress={onPress}>
-          <Text style={styles.buttonText}>No medications</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity style={styles.button} onPress={onPress}>
+        <Text style={styles.buttonText}>+ Add new medication</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -33,8 +30,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   image: {
-    width: 180,
-    height: 180,
+    width: 220,
+    height: 220,
     marginBottom: 16,
   },
   title: {
