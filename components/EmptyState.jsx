@@ -1,19 +1,23 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import emptyStateImg from "../assets/images/EmptyState/empty.jpg";
+import { useRouter } from "expo-router";
 
 const EmptyState = ({
   title = "No Medications",
   message = "You have 0 medications setup",
-  onPress,
 }) => {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <Image source={emptyStateImg} style={styles.image} resizeMode="contain" />
 
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/add-new-medication")}
+      >
         <Text style={styles.buttonText}>+ Add new medication</Text>
       </TouchableOpacity>
     </View>
