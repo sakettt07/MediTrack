@@ -4,7 +4,7 @@ import React from "react";
 const index = () => {
   return (
     <View>
-      <Text>index</Text>
+      <Text>In this Page the user can add the medication dose duration</Text>
     </View>
   );
 };
