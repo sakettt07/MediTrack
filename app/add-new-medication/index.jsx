@@ -1,10 +1,11 @@
 import { View, Text } from "react-native";
 import React from "react";
+import MedicationHeader from "../../components/MedicationHeader";
 
 const index = () => {
   return (
     <View>
-      <Text>In this Page the user can add the medication dose duration</Text>
+      <MedicationHeader />
     </View>
   );
 };
