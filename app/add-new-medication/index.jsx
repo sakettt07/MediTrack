@@ -1,14 +1,14 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import React from "react";
 import MedicationHeader from "../../components/MedicationHeader";
 import MedicationForm from "../../components/MedicationForm";
 
 const Index = () => {
   return (
-    <View style={styles.main}>
+    <ScrollView style={styles.main}>
       <MedicationHeader />
       <MedicationForm />
-    </View>
+    </ScrollView>
   );
 };
 
