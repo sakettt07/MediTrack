@@ -15,8 +15,8 @@ export const formatTime = (timestamp) => {
 };
 
 export const getDatesRange = (startdate, enddate) => {
-  const start = moment(startdate, "MM/DD/YYYY");
-  const end = moment(enddate, "MM/DD/YYYY");
+  const start = moment(new Date(startdate), "MM/DD/YYYY");
+  const end = moment(new Date(enddate), "MM/DD/YYYY");
   const dates = [];
   while (start.isSameOrBefore(end)) {
     dates.push(start.format("MM/DD/YYYY"));

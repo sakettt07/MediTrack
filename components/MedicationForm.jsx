@@ -138,11 +138,11 @@ const MedicationForm = () => {
         />
       </View>
 
-      <View style={styles.inputGroup}>
+      <View style={[styles.inputGroup, { paddingY: 0 }]}>
         <Ionicons
           style={styles.icon}
           name="time-outline"
-          size={24}
+          size={20}
           color="black"
         />
         <Picker
@@ -266,14 +266,14 @@ export default MedicationForm;
 
 const styles = StyleSheet.create({
   header: {
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: 700,
   },
   inputGroup: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    padding: 10,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#d6d4d4ff",
