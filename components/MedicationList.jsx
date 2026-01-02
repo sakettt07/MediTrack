@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getDateRangeToDisplay } from "../service/ConvertDateTime";
@@ -14,29 +13,15 @@ import { getLocalStorage } from "../service/Storage";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import MedicationCardItem from "./MedicationCardItem";
-
-// Loader Component
-const Loader = ({
-  size = "large",
-  color = "#1D6671",
-  text = "Loading medications...",
-}) => {
-  return (
-    <View style={loaderStyles.container}>
-      <View style={loaderStyles.loaderBox}>
-        <ActivityIndicator size={size} color={color} />
-        <Text style={loaderStyles.text}>{text}</Text>
-      </View>
-    </View>
-  );
-};
+import EmptyState from "./EmptyState";
+import { useRouter } from "expo-router";
 
 const MedicationList = () => {
+  const router = useRouter();
   const [medList, setMedList] = useState([]);
   const [dateRange, setDateRange] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasInitialLoaded, setHasInitialLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const GetDateRangeList = () => {
     const dateRange = getDateRangeToDisplay();
@@ -45,13 +30,9 @@ const MedicationList = () => {
       setSelectedDate(dateRange[0]);
     }
   };
-
   const GetMedicationList = async (selectedDate) => {
-    if (!selectedDate) return;
-
-    setIsLoading(true);
+    setLoading(true);
     const user = await getLocalStorage("userDetail");
-
     try {
       const q = query(
         collection(db, "medication"),
@@ -64,48 +45,38 @@ const MedicationList = () => {
         ...doc.data(),
       }));
 
-      // Simulate a slight delay for better UX (optional)
-      setTimeout(() => {
-        setMedList(list);
-        setIsLoading(false);
-        if (!hasInitialLoaded) setHasInitialLoaded(true);
-      }, 300);
+      setMedList(list);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
-
-  const handleDatePress = (date) => {
-    setSelectedDate(date.formattedDate);
   };
 
   useEffect(() => {
     GetDateRangeList();
   }, []);
-
   useEffect(() => {
-    if (selectedDate) {
-      GetMedicationList(selectedDate);
-    }
+    GetMedicationList(selectedDate);
   }, [selectedDate]);
-
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        marginTop: 10,
+        paddingRight: 9,
+        paddingLeft: 9,
+      }}
+    >
       <Image
         style={styles.medListImage}
         source={require("./../assets/images/Medication/medicationList.jpg")}
       />
-
-      {/* Date Range Selector */}
       <FlatList
         data={dateRange}
         horizontal
-        showsHorizontalScrollIndicator={false}
         renderItem={({ item, index }) => (
           <TouchableOpacity
-            onPress={() => handleDatePress(item)}
-            disabled={isLoading}
+            onPress={() => setSelectedDate(item.formattedDate)}
             style={[
               styles.dateGroup,
               {
@@ -113,7 +84,6 @@ const MedicationList = () => {
                   item?.formattedDate == selectedDate
                     ? "rgba(29, 102, 113, 0.87)"
                     : "rgba(177, 240, 250, 0.87)",
-                opacity: isLoading ? 0.7 : 1,
               },
             ]}
           >
@@ -140,43 +110,37 @@ const MedicationList = () => {
           </TouchableOpacity>
         )}
       />
-
-      {/* Loading State */}
-      {isLoading ? (
-        <Loader />
+      {medList.length > 0 ? (
+        <FlatList
+          data={medList}
+          onRefresh={() => GetMedicationList(selectedDate)}
+          refreshing={loading}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/action-modal",
+                  params: {
+                    ...item,
+                    selectedDate: selectedDate,
+                  },
+                })
+              }
+            >
+              <MedicationCardItem medicine={item} selectedDate={selectedDate} />
+            </TouchableOpacity>
+          )}
+        />
       ) : (
-        /* Medication List or Empty State */
-        <View style={styles.listContainer}>
-          {medList.length > 0 ? (
-            <FlatList
-              data={medList}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <MedicationCardItem medicine={item} />}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.flatListContent}
-            />
-          ) : hasInitialLoaded ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>
-                No medications scheduled for this day
-              </Text>
-            </View>
-          ) : null}
-        </View>
+        <Text style={styles.noMed}>No medications...</Text>
       )}
     </View>
   );
 };
 
 export default MedicationList;
-
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 10,
-    paddingRight: 9,
-    paddingLeft: 9,
-    flex: 1,
-  },
   medListImage: {
     width: "100%",
     height: 200,
@@ -191,63 +155,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
     marginTop: 14,
     borderRadius: 5,
-    minWidth: 60,
   },
   day: {
     fontSize: 17,
     fontWeight: "bold",
   },
-  date: {
-    fontSize: 14,
-    marginTop: 2,
-  },
-  listContainer: {
-    flex: 1,
-    marginTop: 10,
-  },
-  flatListContent: {
-    paddingBottom: 20,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 40,
-  },
-  emptyStateText: {
-    fontSize: 16,
-    color: "#666",
+  noMed: {
     textAlign: "center",
-    fontStyle: "italic",
-  },
-});
-
-const loaderStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: 200,
-  },
-  loaderBox: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 30,
-    borderRadius: 15,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    minWidth: 200,
-  },
-  text: {
-    marginTop: 15,
-    fontSize: 16,
-    color: "#1D6671",
-    fontWeight: "500",
+    marginTop: 30,
   },
 });

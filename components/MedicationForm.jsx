@@ -56,7 +56,7 @@ const MedicationForm = () => {
       return;
     }
     const dates = getDatesRange(formData?.startDate, formData?.endDate);
-    console.log("These are my dates", dates);
+
     setLoader(true);
 
     try {

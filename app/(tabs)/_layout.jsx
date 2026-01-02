@@ -6,6 +6,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../config/firebaseConfig";
 import { getLocalStorage } from "../../service/Storage";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function TabLayout() {
   const router = useRouter();
@@ -35,11 +36,11 @@ export default function TabLayout() {
         }}
       ></Tabs.Screen>
       <Tabs.Screen
-        name="AddNew"
+        name="History"
         options={{
-          tabBarLabel: "Add",
+          tabBarLabel: "History",
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name="add" size={size} color={color} />
+            <AntDesign name="history" size={size} color={color} />
           ),
         }}
       ></Tabs.Screen>
