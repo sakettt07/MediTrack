@@ -1,22 +1,10 @@
 import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { Redirect, useRouter } from "expo-router";
-import { signOut } from "firebase/auth";
-import { auth } from "../../config/firebaseConfig";
 import Header from "../../components/Header";
 import MedicationList from "../../components/MedicationList";
 
 export default function Home() {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.replace("/login");
-    } catch (error) {
-      console.log("Logout Error", error);
-    }
-  };
   return (
     <View
       style={{
@@ -25,10 +13,6 @@ export default function Home() {
       }}
     >
       <Header />
-      {/* <TouchableOpacity style={styles.logoutt} onPress={handleLogout}>
-        <Text>Logout</Text>
-      </TouchableOpacity> */}
-      {/*  the main content will come here now */}
       <MedicationList />
     </View>
   );

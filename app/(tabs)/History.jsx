@@ -5,6 +5,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getDateRangeToDisplay } from "../../service/ConvertDateTime";
@@ -17,23 +18,51 @@ import { db } from "../../config/firebaseConfig";
 const History = () => {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(null);
-  const [dateRange, setDateRange] = useState();
+  const [dateRange, setDateRange] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [medList, setMedList] = useState([]);
+  const [initialDateSet, setInitialDateSet] = useState(false);
+
   const GetDateList = () => {
     const dates = getDateRangeToDisplay();
     setDateRange(dates);
+
+    // Set default selected date to today or first date if not set
+    if (!selectedDate && dates.length > 0) {
+      // Find today's date or use the first date
+      const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+      const todayInList = dates.find((date) => date.formattedDate === today);
+      if (todayInList) {
+        setSelectedDate(today);
+      } else {
+        setSelectedDate(dates[0]?.formattedDate);
+      }
+    }
   };
 
-  const GetMedicationList = async (selectedDate) => {
+  const GetMedicationList = async (date) => {
+    if (!date) {
+      setMedList([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
-    const user = await getLocalStorage("userDetail");
     try {
+      const user = await getLocalStorage("userDetail");
+
+      if (!user?.email) {
+        setMedList([]);
+        setLoading(false);
+        return;
+      }
       const q = query(
         collection(db, "medication"),
-        where("userEmail", "==", user?.email),
-        where("dateRange", "array-contains", selectedDate)
+        where("userEmail", "==", user.email),
+        where("dateRange", "array-contains", date)
       );
+
       const querySnapshot = await getDocs(q);
       const list = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -41,37 +70,65 @@ const History = () => {
       }));
 
       setMedList(list);
-      setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching medications:", error);
+      setMedList([]);
+    } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await GetMedicationList(selectedDate);
+  };
+
+  // Handle date change
+  const handleDatePress = (formattedDate) => {
+    setSelectedDate(formattedDate);
+    GetMedicationList(formattedDate);
+  };
+
   useEffect(() => {
     GetDateList();
-    GetMedicationList(selectedDate);
   }, []);
+
+  // Fetch medications when selectedDate changes
+  useEffect(() => {
+    if (selectedDate) {
+      GetMedicationList(selectedDate);
+    }
+  }, [selectedDate]);
+
   return (
     <FlatList
       data={[]}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       ListHeaderComponent={
-        <View style={styles?.mainCont}>
+        <View style={styles.mainCont}>
           <Image
             style={styles.imageB}
             source={require("./../../assets/images/Medication/history.jpg")}
           />
           <Text style={styles.text}>Medication History</Text>
+
+          {/* Dates List */}
           <FlatList
             data={dateRange}
             horizontal
-            renderItem={({ item, index }) => (
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.formattedDate}
+            renderItem={({ item }) => (
               <TouchableOpacity
-                onPress={() => setSelectedDate(item.formattedDate)}
+                onPress={() => handleDatePress(item.formattedDate)}
                 style={[
                   styles.dateGroup,
                   {
                     backgroundColor:
-                      item?.formattedDate == selectedDate
+                      item?.formattedDate === selectedDate
                         ? "rgba(29, 102, 113, 0.87)"
                         : "rgba(177, 240, 250, 0.87)",
                   },
@@ -82,7 +139,7 @@ const History = () => {
                     styles.day,
                     {
                       color:
-                        item?.formattedDate == selectedDate ? "#fff" : "#000",
+                        item?.formattedDate === selectedDate ? "#fff" : "#000",
                     },
                   ]}
                 >
@@ -93,7 +150,7 @@ const History = () => {
                     styles.date,
                     {
                       color:
-                        item?.formattedDate == selectedDate ? "#fff" : "#000",
+                        item?.formattedDate === selectedDate ? "#fff" : "#000",
                     },
                   ]}
                 >
@@ -102,36 +159,49 @@ const History = () => {
               </TouchableOpacity>
             )}
           />
-          {medList.length > 0 ? (
-            <FlatList
-              data={medList}
-              onRefresh={() => GetMedicationList(selectedDate)}
-              refreshing={loading}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/action-modal",
-                      params: {
-                        ...item,
-                        selectedDate: selectedDate,
-                      },
-                    })
-                  }
-                >
-                  <MedicationCardItem
-                    medicine={item}
-                    selectedDate={selectedDate}
-                  />
-                </TouchableOpacity>
-              )}
-            />
-          ) : (
-            <Text style={styles.noMed}>No medications...</Text>
-          )}
+
+          {/* Medications List */}
+          <View style={styles.medicationListContainer}>
+            {loading ? (
+              <Text style={styles.loadingText}>Loading medications...</Text>
+            ) : medList.length > 0 ? (
+              <FlatList
+                data={medList}
+                keyExtractor={(item) => item.id}
+                scrollEnabled={false} // Since it's inside another FlatList
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/action-modal",
+                        params: {
+                          ...item,
+                          selectedDate: selectedDate,
+                        },
+                      })
+                    }
+                    style={styles.medicationItem}
+                  >
+                    <MedicationCardItem
+                      medicine={item}
+                      selectedDate={selectedDate}
+                    />
+                  </TouchableOpacity>
+                )}
+              />
+            ) : (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.noMed}>
+                  {selectedDate
+                    ? "No medications for this date"
+                    : "Select a date to view medications"}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       }
+      ListEmptyComponent={null}
     />
   );
 };
@@ -142,16 +212,17 @@ const styles = StyleSheet.create({
   mainCont: {
     padding: 24,
     backgroundColor: "white",
+    minHeight: "100%",
   },
   dateGroup: {
     paddingHorizontal: 15,
     paddingVertical: 6,
     backgroundColor: "rgba(177, 240, 250, 0.87)",
-    display: "flex",
     alignItems: "center",
     marginRight: 5,
     marginTop: 14,
     borderRadius: 5,
+    minWidth: 70,
   },
   day: {
     fontSize: 17,
@@ -164,10 +235,28 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    fontWeight: 600,
+    fontWeight: "600",
+    marginTop: 10,
+  },
+  medicationListContainer: {
+    marginTop: 20,
+  },
+  medicationItem: {
+    marginBottom: 10,
+  },
+  loadingText: {
+    textAlign: "center",
+    marginTop: 30,
+    fontSize: 16,
+    color: "#666",
   },
   noMed: {
     textAlign: "center",
     marginTop: 30,
+    fontSize: 16,
+    color: "#666",
+  },
+  emptyContainer: {
+    paddingVertical: 40,
   },
 });
